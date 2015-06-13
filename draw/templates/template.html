@@ -1,0 +1,64 @@
+<html>
+  <head>
+    <script type="text/javascript">
+     if(typeof window.Draw == "undefined"){
+       window.Draw = {};
+
+       require.config({
+         paths: {
+           d3: "https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min",
+           underscore: "http://underscorejs.org/underscore"
+         }
+       });
+
+       require(["underscore", "d3"], function(_, d3){
+         IPython.notebook.kernel.comm_manager.register_target("Draw", function(comm){
+           window.Draw.comm = comm;
+
+           comm.on_msg(function(msg){
+             var mdata = msg.content.data;
+             var svg = d3.select("#" + mdata["canvas_id"]);
+
+             if(!_.isUndefined(svg)){
+               /***********************************
+                  msg = {
+                    queue: [{
+                      method: "append",
+                      type: "rect"
+                      attr: {
+                         width: 
+                         height: 
+                      }
+                      selector_id: "1234-5678-9"
+                    }]
+                  }
+                ***********************************/
+               _.each(mdata["queue"], function(m){
+                 switch(m.method){
+                   case "append":
+                     var node = svg.append(m.type).attr("id", m.selector_id);
+                     break;
+                   case "update":
+                     var node = d3.select("#" + m.selector_id);
+                     break;
+                   case "delete":
+                     var node = d3.select("#" + m.selector_id);
+                     node.remove();
+                     break;
+                 }
+
+                 if(m.css)node.style(m.css);
+                 if(m.attr)node.attr(m.attr);
+               });
+             }
+           });
+         });
+       });
+     }
+    </script>
+  </head>
+  <body>
+    <svg id="{{canvas_id}}" style="{{svg_style}}">
+    </svg>
+  </body>
+</html>
