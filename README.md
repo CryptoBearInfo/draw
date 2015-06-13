@@ -16,9 +16,9 @@ from draw import *
 cv = Canvas()
 r = Rect(100, 0, width=100, height=100 fill="#000")
 
-def func(**kw):
-    i = kw["num"]%(2*pi)
-    r.update(x=100*cos(i), y=100*sin(i))
+def func(i):
+    r.x(100*cos(i/5.))
+    r.y(100*sin(i/5.))
   
 cv.add(r)
 cv.loop(func)
